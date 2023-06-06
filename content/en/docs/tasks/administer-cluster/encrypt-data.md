@@ -1,10 +1,9 @@
 ---
-title: Encrypting Secret Data at Rest
+title: Encrypting Confidential Data at Rest
 reviewers:
 - smarterclayton
 - enj
 content_type: task
-min-kubernetes-server-version: 1.13
 weight: 210
 ---
 
@@ -13,13 +12,19 @@ This page shows how to enable and configure encryption of secret data at rest.
 
 ## {{% heading "prerequisites" %}}
 
-* {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
+* {{< include "task-tutorial-prereqs.md" >}}
 
-* etcd v3.0 or later is required
+* This task assumes that you are running the Kubernetes API server as a
+  {{< glossary_tooltip text="static pod" term_id="static-pod" >}} on each control
+  plane node.
+
+* Your cluster's control plane **must** use etcd v3.x (major version 3, any minor version).
 
 * To encrypt a custom resource, your cluster must be running Kubernetes v1.26 or newer.
 
-* Use of wildcard for resource encryption is available from Kubernetes v1.27 or newer.
+* To use a wildcard to match resources, your cluster must be running Kubernetes v1.27 or newer.
+
+{{< version-check >}}
 
 
 <!-- steps -->
@@ -29,7 +34,7 @@ This page shows how to enable and configure encryption of secret data at rest.
 The `kube-apiserver` process accepts an argument `--encryption-provider-config`
 that controls how API data is encrypted in etcd.
 The configuration is provided as an API named
-[`EncryptionConfiguration`](/docs/reference/config-api/apiserver-encryption.v1/). `--encryption-provider-config-automatic-reload` boolean argument determines if the file set by `--encryption-provider-config` should be automatically reloaded if the disk contents change. This enables key rotation without API server restarts. An example configuration is provided below.
+[`EncryptionConfiguration`](/docs/reference/config-api/apiserver-encryption.v1/). An example configuration is provided below.
 
 {{< caution >}}
 **IMPORTANT:** For high-availability configurations (with two or more control plane nodes), the
@@ -316,19 +321,19 @@ To create a new Secret, perform the following steps:
      - command:
        - kube-apiserver
        ...
-       - --encryption-provider-config=/etc/kubernetes/enc/enc.yaml  # <-- add this line
+       - --encryption-provider-config=/etc/kubernetes/enc/enc.yaml  # add this line
        volumeMounts:
        ...
-       - name: enc                           # <-- add this line
-         mountPath: /etc/kubernetes/enc      # <-- add this line
-         readonly: true                      # <-- add this line
+       - name: enc                           # add this line
+         mountPath: /etc/kubernetes/enc      # add this line
+         readonly: true                      # add this line
        ...
      volumes:
      ...
-     - name: enc                             # <-- add this line
-       hostPath:                             # <-- add this line
-         path: /etc/kubernetes/enc           # <-- add this line
-         type: DirectoryOrCreate             # <-- add this line
+     - name: enc                             # add this line
+       hostPath:                             # add this line
+         path: /etc/kubernetes/enc           # add this line
+         type: DirectoryOrCreate             # add this line
      ...
    ```
 
@@ -456,6 +461,19 @@ Then run the following command to force decrypt all Secrets:
 ```shell
 kubectl get secrets --all-namespaces -o json | kubectl replace -f -
 ```
+
+## Configure automatic reloading
+
+You can configure automatic reloading of encryption provider configuration.
+That setting determines whether the
+{{< glossary_tooltip text="API server" term_id="kube-apiserver" >}} should
+load the file you specify for `--encryption-provider-config` only once at
+startup, or automatically whenever you change that file. Enabling this option
+allows you to change the keys for encryption at rest without restarting the
+API server.
+
+To allow automatic reloading, configure the API server to run with:
+`--encryption-provider-config-automatic-reload=true`
 
 ## {{% heading "whatsnext" %}}
 
