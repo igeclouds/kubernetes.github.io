@@ -1116,7 +1116,7 @@ Select one of the tabs.
 metadata:
     name: my-service
     annotations:
-        cloud.google.com/load-balancer-type: "Internal"
+        networking.gke.io/load-balancer-type: "Internal"
 [...]
 ```
 
@@ -1868,7 +1868,7 @@ Otherwise, those client Pods won't have their environment variables populated.
 If you only use DNS to discover the cluster IP for a Service, you don't need to
 worry about this ordering issue.
 -->
-当你的 Pod 具有访问某 Service，并且你在使用环境变量方法将端口和集群 IP 发布到客户端
+当你的 Pod 需要访问某 Service，并且你在使用环境变量方法将端口和集群 IP 发布到客户端
 Pod 时，必须在客户端 Pod 出现**之前**创建该 Service。
 否则，这些客户端 Pod 中将不会出现对应的环境变量。
 
@@ -2000,7 +2000,7 @@ for that Service.
 When you define a Service, you can specify `externalIPs` for any
 [service type](#publishing-services-service-types).
 In the example below, the Service named `"my-service"` can be accessed by clients using TCP,
-on `"198.51.100.32:80"` (calculated from `.spec.externalIP` and `.spec.port`).
+on `"198.51.100.32:80"` (calculated from `.spec.externalIPs[]` and `.spec.ports[].port`).
 -->
 ### 外部 IP  {#external-ips}
 
@@ -2011,7 +2011,7 @@ on `"198.51.100.32:80"` (calculated from `.spec.externalIP` and `.spec.port`).
 定义 Service 时，你可以为任何[服务类型](#publishing-services-service-types)指定 `externalIPs`。
 
 在下面的例子中，名为 `my-service` 的服务可以在 "`198.51.100.32:80`"
-（从 .spec.externalIP 和 .spec.port 计算）上被客户端使用 TCP 协议访问。
+（从 `.spec.externalIPs[]` 和 `.spec.ports[].port` 计算）上被客户端使用 TCP 协议访问。
 
 ```yaml
 apiVersion: v1
