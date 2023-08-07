@@ -117,7 +117,8 @@ spec:
       targetPort: 9376
 ```
 
-Applying this manifest creates a new Service named "my-service", which
+Applying this manifest creates a new Service named "my-service" with the default
+ClusterIP [service type](#publishing-services-service-types). The Service
 targets TCP port 9376 on any Pod with the `app.kubernetes.io/name: MyApp` label.
 
 Kubernetes assigns this Service an IP address (the _cluster IP_),
@@ -462,7 +463,7 @@ The IP address that you choose must be a valid IPv4 or IPv6 address from within 
 If you try to create a Service with an invalid `clusterIP` address value, the API
 server will return a 422 HTTP status code to indicate that there's a problem.
 
-Read [avoiding collisions](#avoiding-collisions)
+Read [avoiding collisions](/docs/reference/networking/virtual-ips/#avoiding-collisions)
 to learn how Kubernetes helps reduce the risk and impact of two different Services
 both trying to use the same IP address.
 
@@ -618,7 +619,7 @@ can define your own (provider specific) annotations on the Service that specify 
 
 #### Load balancers with mixed protocol types
 
-{{< feature-state for_k8s_version="v1.24" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
 By default, for LoadBalancer type of Services, when there is more than one port defined, all
 ports must have the same protocol, and the protocol must be one which is supported

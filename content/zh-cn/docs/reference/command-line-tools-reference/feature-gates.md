@@ -248,7 +248,7 @@ For a reference to old feature gates that are removed, please refer to
 | `ServiceNodePortStaticSubrange` | `false` | Alpha | 1.27 | |
 | `SizeMemoryBackedVolumes` | `false` | Alpha | 1.20 | 1.21 |
 | `SizeMemoryBackedVolumes` | `true` | Beta | 1.22 | |
-| `StableLoadBalancerNodeGet` | `true` | Beta | 1.27 | |
+| `StableLoadBalancerNodeSet` | `true` | Beta | 1.27 | |
 | `StatefulSetAutoDeletePVC` | `false` | Alpha | 1.23 | 1.26 |
 | `StatefulSetAutoDeletePVC` | `false` | Beta | 1.27 | |
 | `StatefulSetStartOrdinal` | `false` | Alpha | 1.26 | 1.26 |
@@ -1269,16 +1269,16 @@ Each feature gate is designed for enabling/disabling a specific feature:
   ClusterIP range is subdivided. Dynamic allocated ClusterIP addresses will be allocated preferently
   from the upper range allowing users to assign static ClusterIPs from the lower range with a low
   risk of collision. See
-  [Avoiding collisions](/docs/concepts/services-networking/service/#avoiding-collisions)
+  [Avoiding collisions](/docs/reference/networking/virtual-ips/#avoiding-collisions)
   for more details.
 -->
 - `ServiceIPStaticSubrange`：启用服务 ClusterIP 分配策略，从而细分 ClusterIP 范围。
   动态分配的 ClusterIP 地址将优先从较高范围分配，以低冲突风险允许用户从较低范围分配静态 ClusterIP。
-  更多详细信息请参阅[避免冲突](/zh-cn/docs/concepts/services-networking/service/#avoiding-collisions)
+  更多详细信息请参阅[避免冲突](/zh-cn/docs/reference/networking/virtual-ips/#avoiding-collisions)
 <!--
 - `SizeMemoryBackedVolumes`: Enable kubelets to determine the size limit for
   memory-backed volumes (mainly `emptyDir` volumes).
-- `StableLoadBalancerNodeGet`: Enables less load balancer re-configurations by 
+- `StableLoadBalancerNodeSet`: Enables less load balancer re-configurations by
   the service controller (KCCM) as an effect of changing node state.
 - `StatefulSetStartOrdinal`: Allow configuration of the start ordinal in a
   StatefulSet. See
@@ -1286,7 +1286,7 @@ Each feature gate is designed for enabling/disabling a specific feature:
   for more details.
 -->
 - `SizeMemoryBackedVolumes`：允许 kubelet 检查基于内存制备的卷的尺寸约束（目前主要针对 `emptyDir` 卷）。
-- `StableLoadBalancerNodeGet`: 允许服务控制器（KCCM）根据节点状态变化来减少负载均衡器的重新配置。
+- `StableLoadBalancerNodeSet`: 允许服务控制器（KCCM）根据节点状态变化来减少负载均衡器的重新配置。
 - `StatefulSetMinReadySeconds`: 允许 StatefulSet 控制器采纳 `minReadySeconds` 设置。
 - `StatefulSetStartOrdinal`：允许在 StatefulSet 中配置起始序号。
   更多细节请参阅[起始序号](/zh-cn/docs/concepts/workloads/controllers/statefulset/#start-ordinal)。
