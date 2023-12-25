@@ -24,6 +24,10 @@ You can generate a Secret by defining a `secretGenerator` in a
 literal values. For example, the following instructions create a Kustomization
 file for the username `admin` and the password `1f2d1e2e67df`.
 
+{{< note >}}
+The `stringData` field for a Secret does not work well with server-side apply.
+{{< /note >}}
+
 ### Create the Kustomization file
 
 {{< tabs name="Secret data" >}}
@@ -35,7 +39,7 @@ secretGenerator:
   - password=1f2d1e2e67df
 {{< /tab >}}
 {{% tab name="Files" %}}
-1.  Store the credentials in files with the values encoded in base64:
+1.  Store the credentials in files. The filenames are the keys of the secret:
 
     ```shell
     echo -n 'admin' > ./username.txt

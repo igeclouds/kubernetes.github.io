@@ -762,12 +762,13 @@ The output is:
 
 1. 在列表中使用 note 短代码
 
-1. 带嵌套 note 的第二个条目
+2. 带嵌套 note 的第二个条目
 
-    {{< note >}}
     <!--
     Warning, Caution, and Note shortcodes, embedded in lists, need to be indented four spaces. See [Common Shortcode Issues](#common-shortcode-issues).
     -->
+    
+    {{< note >}}
     警告、小心和注释短代码可以嵌套在列表中，但是要缩进四个空格。
     参见[常见短代码问题](#common-shortcode-issues)。
     {{< /note >}}
@@ -777,9 +778,9 @@ The output is:
 
 1. A fourth item in a list
 -->
-1. 列表中第三个条目
+3. 列表中第三个条目
 
-1. 列表中第四个条目
+4. 列表中第四个条目
 
 <!--
 ### Caution
@@ -945,6 +946,21 @@ structure of content in a code editor better.
 二级标题紧随一级标题（或标题），中间没有段落或文字。
 
 两行的留白有助于在代码编辑器中查看整个内容的结构组织。
+
+<!--
+Manually wrap paragraphs in the Markdown source when appropriate. Since the git
+tool and the GitHub website generate file diffs on a line-by-line basis,
+manually wrapping long lines helps the reviewers to easily find out the changes
+made in a PR and provide feedback. It also helps the downstream localization
+teams where people track the upstream changes on a per-line basis.  Line
+wrapping can happen at the end of a sentence or a punctuation character, for
+example. One exception to this is that a Markdown link or a shortcode is
+expected to be in a single line.
+-->
+适当时在 Markdown 文档中手动换行。由于 git 工具和 GitHub
+网站是逐行生成文件差异的，手动换行可以帮助审阅者轻松找到 PR 中所做的更改并提供反馈。
+它还可以帮助下游本地化团队，使其按行跟踪上游更改。例如，换行可以发生在句子或标点符号的末尾。
+一个例外是 Markdown 链接或短代码应位于一行中。
 
 <!--
 ### Headings and titles {#headings}

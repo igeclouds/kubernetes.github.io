@@ -598,7 +598,7 @@ workload to function correctly are applied.
 在 resources 和 verbs 条目中使用通配符会为敏感资源授予过多的访问权限。
 例如，如果添加了新的资源类型、新的子资源或新的自定义动词，
 通配符条目会自动授予访问权限，用户可能不希望出现这种情况。
-应该执行[最小特权原则](zh-cn/docs/concepts/security/rbac-good-practices/#least-privilege)，
+应该执行[最小特权原则](/zh-cn/docs/concepts/security/rbac-good-practices/#least-privilege)，
 使用具体的 resources 和 verbs 确保仅赋予工作负载正常运行所需的权限。
 {{< /caution >}}
 
@@ -960,7 +960,7 @@ so that authentication produces usernames in the format you want.
 -->
 ### 对主体的引用   {#referring-to-subjects}
 
-RoleBinding 或者 ClusterRoleBinding 可绑定角色到某**主体（Subject）**上。
+RoleBinding 或者 ClusterRoleBinding 可绑定角色到某**主体（Subject）** 上。
 主体可以是组，用户或者{{< glossary_tooltip text="服务账户" term_id="service-account" >}}。
 
 Kubernetes 用字符串来表示用户名。

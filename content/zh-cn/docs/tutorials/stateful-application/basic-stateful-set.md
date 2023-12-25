@@ -42,7 +42,6 @@ following Kubernetes concepts:
 * [Headless Services](/docs/concepts/services-networking/service/#headless-services)
 * [PersistentVolumes](/docs/concepts/storage/persistent-volumes/)
 * [PersistentVolume Provisioning](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/)
-* [StatefulSets](/docs/concepts/workloads/controllers/statefulset/)
 * The [kubectl](/docs/reference/kubectl/kubectl/) command line tool
 -->
 * [Pod](/zh-cn/docs/concepts/workloads/pods/)
@@ -50,18 +49,39 @@ following Kubernetes concepts:
 * [Headless Service](/zh-cn/docs/concepts/services-networking/service/#headless-services)
 * [PersistentVolumes](/zh-cn/docs/concepts/storage/persistent-volumes/)
 * [PersistentVolume Provisioning](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/)
-* [StatefulSet](/zh-cn/docs/concepts/workloads/controllers/statefulset/)
 * [kubectl](/zh-cn/docs/reference/kubectl/kubectl/) 命令行工具
+
+{{% include "task-tutorial-prereqs.md" %}}
+<!--
+You should configure `kubectl` to use a context that uses the `default`
+namespace.
+If you are using an existing cluster, make sure that it's OK to use that
+cluster's default namespace to practice. Ideally, practice in a cluster
+that doesn't run any real workloads.
+
+It's also useful to read the concept page about [StatefulSets](/docs/concepts/workloads/controllers/statefulset/).
+-->
+你应该配置 `kubectl` 的上下文使用 `default` 命名空间。
+如果你使用的是现有集群，请确保可以使用该集群的 `default` 命名空间进行练习。
+理想情况下，在没有运行任何实际工作负载的集群中进行练习。
+
+阅读有关 [StatefulSet](/zh-cn/docs/concepts/workloads/controllers/statefulset/)
+的概念页面也很有用。
 
 {{< note >}}
 <!--
 This tutorial assumes that your cluster is configured to dynamically provision
-PersistentVolumes. If your cluster is not configured to do so, you
+PersistentVolumes. You'll also need to have a [default StorageClass](/docs/concepts/storage/storage-classes/#default-storageclass).
+If your cluster is not configured to provision storage dynamically, you
 will have to manually provision two 1 GiB volumes prior to starting this
-tutorial.
+tutorial and
+set up your cluster so that those PersistentVolumes map to the
+PersistentVolumeClaim templates that the StatefulSet defines.
 -->
-本教程假设你的集群被配置为动态制备 PersistentVolume 卷。
-如果没有这样配置，在开始本教程之前，你需要手动准备 2 个 1 GiB 的存储卷。
+本教程假设你的集群被配置为动态制备 PersistentVolume 卷，
+且有一个[默认 StorageClass](/zh-cn/docs/concepts/storage/storage-classes/#default-storageclass)。
+如果没有这样配置，在开始本教程之前，你需要手动准备 2 个 1 GiB 的存储卷，
+以便这些 PersistentVolume 可以映射到 StatefulSet 定义的 PersistentVolumeClaim 模板。
 {{< /note >}}
 
 ## {{% heading "objectives" %}}
@@ -117,16 +137,11 @@ It creates a [headless Service](/docs/concepts/services-networking/service/#head
 {{% code_sample file="application/web/web.yaml" %}}
 
 <!--
-Download the example above, and save it to a file named `web.yaml`
--->
-下载上面的例子并保存为文件 `web.yaml`。
-
-<!--
-You will need to use two terminal windows. In the first terminal, use
+You will need to use at least two terminal windows. In the first terminal, use
 [`kubectl get`](/docs/reference/generated/kubectl/kubectl-commands/#get) to watch the creation
 of the StatefulSet's Pods.
 -->
-你需要使用两个终端窗口。在第一个终端中，使用
+你需要使用至少两个终端窗口。在第一个终端中，使用
 [`kubectl get`](/docs/reference/generated/kubectl/kubectl-commands/#get)
 来监视 StatefulSet 的 Pod 的创建情况。
 
@@ -137,13 +152,13 @@ kubectl get pods -w -l app=nginx
 <!--
 In the second terminal, use
 [`kubectl apply`](/docs/reference/generated/kubectl/kubectl-commands/#apply) to create the
-headless Service and StatefulSet defined in `web.yaml`.
+headless Service and StatefulSet.
 -->
 在另一个终端中，使用 [`kubectl apply`](/docs/reference/generated/kubectl/kubectl-commands/#apply)
-来创建定义在 `web.yaml` 中的 Headless Service 和 StatefulSet。
+来创建 Headless Service 和 StatefulSet。
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 ```
 service/nginx created
@@ -1209,7 +1224,7 @@ update.
 <!--
 The partition is currently set to `2`. Set the partition to `0`:
 -->
-分区当前为 `2`。请将分区设置为 `0`：
+分区当前为 `2`，请将其设置为 `0`：
 
 ```shell
 kubectl patch statefulset web -p '{"spec":{"updateStrategy":{"type":"RollingUpdate","rollingUpdate":{"partition":0}}}}'
@@ -1395,7 +1410,7 @@ an error indicating that the Service already exists.
 Service（你不应该这样做），你将会看到一个错误，提示 Service 已经存在。
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 ```
 statefulset.apps/web created
@@ -1557,7 +1572,7 @@ Recreate the StatefulSet and headless Service one more time:
 再一次重新创建 StatefulSet 和 Headless Service：
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 
 ```
@@ -1660,11 +1675,6 @@ Pod. This option only affects the behavior for scaling operations. Updates are n
 {{{% code_sample file="application/web/web-parallel.yaml" %}}
 
 <!--
-Download the example above, and save it to a file named `web-parallel.yaml`
--->
-下载上面的例子并保存为 `web-parallel.yaml`。
-
-<!--
 This manifest is identical to the one you downloaded above except that the `.spec.podManagementPolicy`
 of the `web` StatefulSet is set to `Parallel`.
 -->
@@ -1686,7 +1696,7 @@ In another terminal, create the StatefulSet and Service in the manifest:
 在另一个终端窗口创建清单中的 StatefulSet 和 Service：
 
 ```shell
-kubectl apply -f web-parallel.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web-parallel.yaml
 ```
 ```
 service/nginx created

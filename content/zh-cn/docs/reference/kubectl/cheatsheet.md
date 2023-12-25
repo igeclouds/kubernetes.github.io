@@ -77,6 +77,18 @@ source <(kubectl completion zsh)  # 在 zsh 中设置当前 shell 的自动补�
 echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc # 在你的 zsh shell 中永久地添加自动补全
 ```
 
+### FISH
+
+<!--
+Require kubectl version 1.23 or above.
+-->
+
+需要 kubectl 版本 1.23 或更高版本。
+
+```bash
++echo 'kubectl completion fish | source' >> ~/.config/fish/config.fish  # 将 kubectl 自动补全永久添加到你的 Fish shell 中
+```
+
 <!--
 ### A note on `--all-namespaces`
 -->
@@ -366,7 +378,7 @@ kubectl get pods --field-selector=status.phase=Running
 kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
 
 # List Names of Pods that belong to Particular RC
-# "jq" command useful for transformations that are too complex for jsonpath, it can be found at https://stedolan.github.io/jq/
+# "jq" command useful for transformations that are too complex for jsonpath, it can be found at https://jqlang.github.io/jq/
 sel=${$(kubectl get rc my-rc --output=json | jq -j '.spec.selector | to_entries | .[] | "\(.key)=\(.value),"')%?}
 echo $(kubectl get pods --selector=$sel --output=jsonpath={.items..metadata.name})
 
@@ -376,6 +388,9 @@ kubectl get pods --show-labels
 # Check which nodes are ready
 JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' \
  && kubectl get nodes -o jsonpath="$JSONPATH" | grep "Ready=True"
+
+# Check which nodes are ready with custom-columns
+kubectl get node -o custom-columns='NODE_NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].status'
 
 # Output decoded secrets without external tools
 kubectl get secret my-secret -o go-template='{{range $k,$v := .data}}{{"### "}}{{$k}}{{"\n"}}{{$v|base64decode}}{{"\n\n"}}{{end}}'
@@ -454,7 +469,7 @@ kubectl get pods --field-selector=status.phase=Running
 kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
 
 # 列出属于某个特定 RC 的 Pod 的名称
-# 在转换对于 jsonpath 过于复杂的场合，"jq" 命令很有用；可以在 https://stedolan.github.io/jq/ 找到它
+# 在转换对于 jsonpath 过于复杂的场合，"jq" 命令很有用；可以在 https://jqlang.github.io/jq/ 找到它
 sel=${$(kubectl get rc my-rc --output=json | jq -j '.spec.selector | to_entries | .[] | "\(.key)=\(.value),"')%?}
 echo $(kubectl get pods --selector=$sel --output=jsonpath={.items..metadata.name})
 
@@ -464,6 +479,9 @@ kubectl get pods --show-labels
 # 检查哪些节点处于就绪状态
 JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' \
  && kubectl get nodes -o jsonpath="$JSONPATH" | grep "Ready=True"
+ 
+# 使用自定义列检查哪些节点处于就绪状态
+kubectl get node -o custom-columns='NODE_NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].status'
 
 # 不使用外部工具来输出解码后的 Secret
 kubectl get secret my-secret -o go-template='{{range $k,$v := .data}}{{"### "}}{{$k}}{{"\n"}}{{$v|base64decode}}{{"\n\n"}}{{end}}'
@@ -682,7 +700,7 @@ kubectl logs my-pod                                 # dump pod logs (stdout)
 kubectl logs -l name=myLabel                        # dump pod logs, with label name=myLabel (stdout)
 kubectl logs my-pod --previous                      # dump pod logs (stdout) for a previous instantiation of a container
 kubectl logs my-pod -c my-container                 # dump pod container logs (stdout, multi-container case)
-kubectl logs -l name=myLabel -c my-container        # dump pod logs, with label name=myLabel (stdout)
+kubectl logs -l name=myLabel -c my-container        # dump pod container logs, with label name=myLabel (stdout)
 kubectl logs my-pod -c my-container --previous      # dump pod container logs (stdout, multi-container case) for a previous instantiation of a container
 kubectl logs -f my-pod                              # stream pod logs (stdout)
 kubectl logs -f my-pod -c my-container              # stream pod container logs (stdout, multi-container case)

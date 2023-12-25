@@ -27,14 +27,25 @@ following Kubernetes concepts:
 * [Headless Services](/docs/concepts/services-networking/service/#headless-services)
 * [PersistentVolumes](/docs/concepts/storage/persistent-volumes/)
 * [PersistentVolume Provisioning](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/)
-* [StatefulSets](/docs/concepts/workloads/controllers/statefulset/)
 * The [kubectl](/docs/reference/kubectl/kubectl/) command line tool
+
+{{% include "task-tutorial-prereqs.md" %}}
+You should configure `kubectl` to use a context that uses the `default`
+namespace.
+If you are using an existing cluster, make sure that it's OK to use that
+cluster's default namespace to practice. Ideally, practice in a cluster
+that doesn't run any real workloads.
+
+It's also useful to read the concept page about [StatefulSets](/docs/concepts/workloads/controllers/statefulset/).
 
 {{< note >}}
 This tutorial assumes that your cluster is configured to dynamically provision
-PersistentVolumes. If your cluster is not configured to do so, you
+PersistentVolumes. You'll also need to have a [default StorageClass](/docs/concepts/storage/storage-classes/#default-storageclass).
+If your cluster is not configured to provision storage dynamically, you
 will have to manually provision two 1 GiB volumes prior to starting this
-tutorial.
+tutorial and
+set up your cluster so that those PersistentVolumes map to the
+PersistentVolumeClaim templates that the StatefulSet defines.
 {{< /note >}}
 
 ## {{% heading "objectives" %}}
@@ -65,22 +76,22 @@ It creates a [headless Service](/docs/concepts/services-networking/service/#head
 
 {{% code_sample file="application/web/web.yaml" %}}
 
-Download the example above, and save it to a file named `web.yaml`
-
-You will need to use two terminal windows. In the first terminal, use
+You will need to use at least two terminal windows. In the first terminal, use
 [`kubectl get`](/docs/reference/generated/kubectl/kubectl-commands/#get) to watch the creation
 of the StatefulSet's Pods.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# use this terminal to run commands that specify --watch
+# end this watch when you are asked to start a new watch
+kubectl get pods --watch -l app=nginx
 ```
 
 In the second terminal, use
 [`kubectl apply`](/docs/reference/generated/kubectl/kubectl-commands/#apply) to create the
-headless Service and StatefulSet defined in `web.yaml`.
+headless Service and StatefulSet:
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 ```
 service/nginx created
@@ -105,7 +116,7 @@ NAME      DESIRED   CURRENT   AGE
 web       2         1         20s
 ```
 
-### Ordered Pod Creation
+### Ordered Pod creation
 
 For a StatefulSet with _n_ replicas, when Pods are being deployed, they are
 created sequentially, ordered from _{0..n-1}_. Examine the output of the
@@ -113,7 +124,9 @@ created sequentially, ordered from _{0..n-1}_. Examine the output of the
 look like the example below.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# Do not start a new watch;
+# this should already be running
+kubectl get pods --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS    RESTARTS   AGE
@@ -212,7 +225,9 @@ contain the Pods' IP addresses.
 In one terminal, watch the StatefulSet's Pods:
 
 ```shell
-kubectl get pod -w -l app=nginx
+# Start a new watch
+# End this watch when you've seen that the delete is finished
+kubectl get pod --watch -l app=nginx
 ```
 In a second terminal, use
 [`kubectl delete`](/docs/reference/generated/kubectl/kubectl-commands/#delete) to delete all
@@ -230,7 +245,8 @@ Wait for the StatefulSet to restart them, and for both Pods to transition to
 Running and Ready:
 
 ```shell
-kubectl get pod -w -l app=nginx
+# This should already be running
+kubectl get pod --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS              RESTARTS   AGE
@@ -355,7 +371,9 @@ before retrying the `curl` command above.
 In one terminal, watch the StatefulSet's Pods:
 
 ```shell
-kubectl get pod -w -l app=nginx
+# End this watch when you've reached the end of the section.
+# At the start of "Scaling a StatefulSet" you'll start a new watch.
+kubectl get pod --watch -l app=nginx
 ```
 
 In a second terminal, delete all of the StatefulSet's Pods:
@@ -371,7 +389,8 @@ Examine the output of the `kubectl get` command in the first terminal, and wait
 for all of the Pods to transition to Running and Ready.
 
 ```shell
-kubectl get pod -w -l app=nginx
+# This should already be running
+kubectl get pod --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS              RESTARTS   AGE
@@ -412,7 +431,10 @@ This is accomplished by updating the `replicas` field. You can use either
 In one terminal window, watch the Pods in the StatefulSet:
 
 ```shell
-kubectl get pods -w -l app=nginx
+# If you already have a watch running, you can continue using that.
+# Otherwise, start one.
+# End this watch when there are 5 healthy Pods for the StatefulSet
+kubectl get pods --watch -l app=nginx
 ```
 
 In another terminal window, use `kubectl scale` to scale the number of replicas
@@ -429,7 +451,8 @@ Examine the output of the `kubectl get` command in the first terminal, and wait
 for the three additional Pods to transition to Running and Ready.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# This should already be running
+kubectl get pod --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS    RESTARTS   AGE
@@ -456,12 +479,13 @@ created each Pod sequentially with respect to its ordinal index, and it
 waited for each Pod's predecessor to be Running and Ready before launching the
 subsequent Pod.
 
-### Scaling Down
+### Scaling down
 
 In one terminal, watch the StatefulSet's Pods:
 
 ```shell
-kubectl get pods -w -l app=nginx
+# End this watch when there are only 3 Pods for the StatefulSet
+kubectl get pod --watch -l app=nginx
 ```
 
 In another terminal, use `kubectl patch` to scale the StatefulSet back down to
@@ -477,7 +501,8 @@ statefulset.apps/web patched
 Wait for `web-4` and `web-3` to transition to Terminating.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# This should already be running
+kubectl get pods --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS              RESTARTS   AGE
@@ -556,7 +581,10 @@ statefulset.apps/web patched
 In another terminal, watch the Pods in the StatefulSet:
 
 ```shell
-kubectl get pod -l app=nginx -w
+# End this watch when the rollout is complete
+#
+# If you're not sure, leave it running one more minute
+kubectl get pod -l app=nginx --watch
 ```
 The output is similar to:
 ```
@@ -662,7 +690,8 @@ pod "web-2" deleted
 Wait for the Pod to be Running and Ready.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# End the watch when you see that web-2 is healthy
+kubectl get pod -l app=nginx --watch
 ```
 ```
 NAME      READY     STATUS              RESTARTS   AGE
@@ -694,6 +723,8 @@ you specified [above](#staging-an-update).
 Patch the StatefulSet to decrement the partition:
 
 ```shell
+# The value of "partition" should match the highest existing ordinal for
+# the StatefulSet
 kubectl patch statefulset web -p '{"spec":{"updateStrategy":{"type":"RollingUpdate","rollingUpdate":{"partition":2}}}}'
 ```
 ```
@@ -703,7 +734,8 @@ statefulset.apps/web patched
 Wait for `web-2` to be Running and Ready.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# This should already be running
+kubectl get pod -l app=nginx --watch
 ```
 ```
 NAME      READY     STATUS              RESTARTS   AGE
@@ -739,7 +771,8 @@ pod "web-1" deleted
 Wait for the `web-1` Pod to be Running and Ready.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# This should already be running
+kubectl get pod -l app=nginx --watch
 ```
 The output is similar to:
 ```
@@ -792,7 +825,8 @@ statefulset.apps/web patched
 Wait for all of the Pods in the StatefulSet to become Running and Ready.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# This should already be running
+kubectl get pod -l app=nginx --watch
 ```
 The output is similar to:
 ```
@@ -847,7 +881,8 @@ deleted.
 In one terminal window, watch the Pods in the StatefulSet.
 
 ```
-kubectl get pods -w -l app=nginx
+# End this watch when there are no Pods for the StatefulSet
+kubectl get pods --watch -l app=nginx
 ```
 
 Use [`kubectl delete`](/docs/reference/generated/kubectl/kubectl-commands/#delete) to delete the
@@ -900,7 +935,8 @@ As the `web` StatefulSet has been deleted, `web-0` has not been relaunched.
 In one terminal, watch the StatefulSet's Pods.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# Leave this watch running until the next time you start a watch
+kubectl get pods --watch -l app=nginx
 ```
 
 In a second terminal, recreate the StatefulSet. Note that, unless
@@ -908,7 +944,7 @@ you deleted the `nginx` Service (which you should not have), you will see
 an error indicating that the Service already exists.
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 ```
 statefulset.apps/web created
@@ -921,7 +957,8 @@ headless Service even though that Service already exists.
 Examine the output of the `kubectl get` command running in the first terminal.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# This should already be running
+kubectl get pods --watch -l app=nginx
 ```
 ```
 NAME      READY     STATUS    RESTARTS   AGE
@@ -968,7 +1005,8 @@ PersistentVolume was remounted.
 In one terminal window, watch the Pods in the StatefulSet.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# Leave this running until the next page section
+kubectl get pods --watch -l app=nginx
 ```
 
 In another terminal, delete the StatefulSet again. This time, omit the
@@ -986,7 +1024,8 @@ Examine the output of the `kubectl get` command running in the first terminal,
 and wait for all of the Pods to transition to Terminating.
 
 ```shell
-kubectl get pods -w -l app=nginx
+# This should already be running
+kubectl get pods --watch -l app=nginx
 ```
 
 ```
@@ -1027,7 +1066,7 @@ service "nginx" deleted
 Recreate the StatefulSet and headless Service one more time:
 
 ```shell
-kubectl apply -f web.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web.yaml
 ```
 
 ```
@@ -1093,21 +1132,20 @@ Pod. This option only affects the behavior for scaling operations. Updates are n
 
 {{% code_sample file="application/web/web-parallel.yaml" %}}
 
-Download the example above, and save it to a file named `web-parallel.yaml`
-
 This manifest is identical to the one you downloaded above except that the `.spec.podManagementPolicy`
 of the `web` StatefulSet is set to `Parallel`.
 
 In one terminal, watch the Pods in the StatefulSet.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# Leave this watch running until the end of the section
+kubectl get pod -l app=nginx --watch
 ```
 
 In another terminal, create the StatefulSet and Service in the manifest:
 
 ```shell
-kubectl apply -f web-parallel.yaml
+kubectl apply -f https://k8s.io/examples/application/web/web-parallel.yaml
 ```
 ```
 service/nginx created
@@ -1117,7 +1155,8 @@ statefulset.apps/web created
 Examine the output of the `kubectl get` command that you executed in the first terminal.
 
 ```shell
-kubectl get pod -l app=nginx -w
+# This should already be running
+kubectl get pod -l app=nginx --watch
 ```
 ```
 NAME      READY     STATUS    RESTARTS   AGE
@@ -1170,7 +1209,8 @@ kubectl delete sts web
 
 You can watch `kubectl get` to see those Pods being deleted.
 ```shell
-kubectl get pod -l app=nginx -w
+# end the watch when you've seen what you need to
+kubectl get pod -l app=nginx --watch
 ```
 ```
 web-3     1/1       Terminating   0         9m
