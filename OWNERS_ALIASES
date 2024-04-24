@@ -2,19 +2,34 @@ aliases:
   sig-docs-blog-owners: # Approvers for blog content
     - mrbobbytables
     - nate-double-u
-    - onlydole
     - sftim
   sig-docs-blog-reviewers: # Reviewers for blog content
     - Gauravpadam
     - mrbobbytables
     - nate-double-u
-    - onlydole
     - sftim
+  sig-docs-website-owners: # Admins for overall website
+    - divya-mohan0209
+    - natalisucks
+    - reylejano
+    - sftim
+    - tengqm
+    - drewhagen # RT 1.30 Docs Lead
+    - katcosgrove # RT 1.30 Lead
   sig-docs-localization-owners: # Admins for localization content
     - a-mccarthy
     - divya-mohan0209
     - natalisucks
-    - onlydole
+    - nate-double-u
+    - reylejano
+    - sftim
+    - seokho-son
+    - tengqm
+  sig-docs-localization-reviewers: # PR reviews for localization changes
+    - a-mccarthy
+    - divya-mohan0209
+    - natalisucks
+    - nate-double-u
     - reylejano
     - sftim
     - seokho-son
@@ -27,25 +42,22 @@ aliases:
     - rlenferink
   sig-docs-en-owners: # Admins for English content
     - celestehorgan
+    - dipesh-rawat
     - divya-mohan0209
-    - drewhagen # RT 1.30 Docs Lead
-    - katcosgrove # RT 1.30 Lead
     - natalisucks
     - nate-double-u
-    - onlydole
     - reylejano
     - sftim
     - tengqm
   sig-docs-en-reviews: # PR reviews for English content
-    - bradtopol
+    - celestehorgan
     - dipesh-rawat
     - divya-mohan0209
     - kbhawkey
-    - mehabhalodiya
     - mengjiao-liu
+    - mickeyboxell
     - natalisucks
     - nate-double-u
-    - onlydole
     - reylejano
     - sftim
     - shannonxtreme
@@ -53,14 +65,15 @@ aliases:
     - windsonsea
   sig-docs-es-owners: # Admins for Spanish content
     - 92nqb
-    - krol3
     - electrocucaracha
+    - krol3
     - raelga
     - ramrodo
   sig-docs-es-reviews: # PR reviews for Spanish content
     - 92nqb
-    - krol3
     - electrocucaracha
+    - jossemarGT
+    - krol3
     - raelga
     - ramrodo
   sig-docs-fr-owners: # Admins for French content
@@ -126,7 +139,6 @@ aliases:
   sig-docs-leads: # Website chairs and tech leads
     - divya-mohan0209
     - natalisucks
-    - onlydole
     - reylejano
     - sftim
     - tengqm
@@ -181,9 +193,11 @@ aliases:
     - truongnh1992
   sig-docs-ru-owners: # Admins for Russian content
     - Arhell
+    - kirkonru
     - shurup
   sig-docs-ru-reviews: # PR reviews for Russian content
     - Arhell
+    - kirkonru
     - shurup
   sig-docs-pl-owners: # Admins for Polish content
     - mfilocha
@@ -231,7 +245,7 @@ aliases:
     - jimangel # Release Manager Associate
     - jrsapi # Release Manager Associate
     - salaxander # Release Manager Associate
-# authoritative source: https://github.com/kubernetes/committee-security-response/blob/main/OWNERS_ALIASES
+  # authoritative source: https://github.com/kubernetes/committee-security-response/blob/main/OWNERS_ALIASES
   committee-security-response:
     - cjcullen
     - cji
@@ -241,7 +255,7 @@ aliases:
     - ritazh
     - SaranBalaji90
     - tabbysable
-# authoritative source: https://github.com/kubernetes/sig-security/blob/main/OWNERS_ALIASES
+  # authoritative source: https://github.com/kubernetes/sig-security/blob/main/OWNERS_ALIASES
   sig-security-leads:
     - IanColdwater
     - tabbysable
