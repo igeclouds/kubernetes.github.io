@@ -41,7 +41,7 @@ namespace. Under the hood, every kubelet heartbeat is an **update** request to t
 the `spec.renewTime` field for the Lease. The Kubernetes control plane uses the time stamp of this field
 to determine the availability of this `Node`.
 
-See [Node Lease objects](/docs/concepts/architecture/nodes/#heartbeats) for more details.
+See [Node Lease objects](/docs/concepts/architecture/nodes/#node-heartbeats) for more details.
 -->
 ## 节点心跳  {#node-heart-beats}
 
@@ -50,7 +50,7 @@ Kubernetes 使用 Lease API 将 kubelet 节点心跳传递到 Kubernetes API 服
 在此基础上，每个 kubelet 心跳都是对该 `Lease` 对象的 **update** 请求，更新该 Lease 的 `spec.renewTime` 字段。
 Kubernetes 控制平面使用此字段的时间戳来确定此 `Node` 的可用性。
 
-更多细节请参阅 [Node Lease 对象](/zh-cn/docs/concepts/architecture/nodes/#heartbeats)。
+更多细节请参阅 [Node Lease 对象](/zh-cn/docs/concepts/architecture/nodes/#node-heartbeats)。
 
 <!--
 ## Leader election
@@ -65,6 +65,14 @@ instances are on stand-by.
 Kubernetes 也使用 Lease 确保在任何给定时间某个组件只有一个实例在运行。
 这在高可用配置中由 `kube-controller-manager` 和 `kube-scheduler` 等控制平面组件进行使用，
 这些组件只应有一个实例激活运行，而其他实例待机。
+
+<!--
+Read [coordinated leader election](/docs/concepts/cluster-administration/coordinated-leader-election)
+to learn about how Kubernetes builds on the Lease API to select which component instance
+acts as leader.
+-->
+参阅[协调领导者选举](/zh-cn/docs/concepts/cluster-administration/coordinated-leader-election)以了解
+Kubernetes 如何基于 Lease API 来选择哪个组件实例充当领导者。
 
 <!--
 ## API server identity
@@ -93,12 +101,12 @@ kube-apiserver 拥有的租约。你还可以使用标签选择算符 `apiserver
 ```shell
 kubectl -n kube-system get lease -l apiserver.kubernetes.io/identity=kube-apiserver
 ```
+
 ```
 NAME                                        HOLDER                                                                           AGE
 apiserver-07a5ea9b9b072c4a5f3d1c3702        apiserver-07a5ea9b9b072c4a5f3d1c3702_0c8914f7-0f35-440e-8676-7844977d3a05        5m33s
 apiserver-7be9e061c59d368b3ddaf1376e        apiserver-7be9e061c59d368b3ddaf1376e_84f2a85d-37c1-4b14-b6b9-603e62e4896f        4m23s
 apiserver-1dfef752bcb36637d2763d1868        apiserver-1dfef752bcb36637d2763d1868_c5ffa286-8a9a-45d4-91e7-61118ed58d2e        4m43s
-
 ```
 
 <!--
@@ -115,6 +123,7 @@ hostname used by kube-apisever by checking the value of the `kubernetes.io/hostn
 ```shell
 kubectl -n kube-system get lease apiserver-07a5ea9b9b072c4a5f3d1c3702 -o yaml
 ```
+
 ```yaml
 apiVersion: coordination.k8s.io/v1
 kind: Lease

@@ -156,6 +156,7 @@ func getCodecForObject(obj runtime.Object) (runtime.Codec, error) {
 
 func validateObject(obj runtime.Object) (errors field.ErrorList) {
 	podValidationOptions := validation.PodValidationOptions{
+		AllowImageVolumeSource:          true,
 		AllowInvalidPodDeletionCost:     false,
 		AllowIndivisibleHugePagesValues: true,
 	}
@@ -169,8 +170,6 @@ func validateObject(obj runtime.Object) (errors field.ErrorList) {
 		AllowInvalidLabelValueInSelector: false,
 	}
 
-	// Enable CustomPodDNS for testing
-	// feature.DefaultFeatureGate.Set("CustomPodDNS=true")
 	switch t := obj.(type) {
 	case *admissionregistration.ValidatingWebhookConfiguration:
 		errors = admreg_validation.ValidateValidatingWebhookConfiguration(t)
@@ -565,9 +564,11 @@ func TestExampleObjectSchemas(t *testing.T) {
 			"example-no-conflict-with-limitrange-cpu": {&api.Pod{}},
 		},
 		"configmap": {
-			"configmaps":          {&api.ConfigMap{}, &api.ConfigMap{}},
-			"configmap-multikeys": {&api.ConfigMap{}},
-			"configure-pod":       {&api.Pod{}},
+			"configmaps":              {&api.ConfigMap{}, &api.ConfigMap{}},
+			"configmap-multikeys":     {&api.ConfigMap{}},
+			"configure-pod":           {&api.Pod{}},
+			"immutable-configmap":     {&api.ConfigMap{}},
+			"new-immutable-configmap": {&api.ConfigMap{}},
 		},
 		"controllers": {
 			"daemonset":                           {&apps.DaemonSet{}},
@@ -582,6 +583,7 @@ func TestExampleObjectSchemas(t *testing.T) {
 			"job-pod-failure-policy-example":      {&batch.Job{}},
 			"job-pod-failure-policy-failjob":      {&batch.Job{}},
 			"job-pod-failure-policy-ignore":       {&batch.Job{}},
+			"job-success-policy":                  {&batch.Job{}},
 			"replicaset":                          {&apps.ReplicaSet{}},
 			"replication":                         {&api.ReplicationController{}},
 			"replication-nginx-1.14.2":            {&api.ReplicationController{}},
@@ -599,6 +601,7 @@ func TestExampleObjectSchemas(t *testing.T) {
 		},
 		"pods": {
 			"commands":                            {&api.Pod{}},
+			"image-volumes":                       {&api.Pod{}},
 			"init-containers":                     {&api.Pod{}},
 			"lifecycle-events":                    {&api.Pod{}},
 			"pod-configmap-env-var-valueFrom":     {&api.Pod{}},
@@ -613,7 +616,7 @@ func TestExampleObjectSchemas(t *testing.T) {
 			"pod-projected-svc-token":             {&api.Pod{}},
 			"pod-rs":                              {&api.Pod{}, &api.Pod{}},
 			"pod-single-configmap-env-variable":   {&api.Pod{}},
-			"pod-with-affinity-anti-affinity":     {&api.Pod{}},
+			"pod-with-affinity-preferred-weight":  {&api.Pod{}},
 			"pod-with-node-affinity":              {&api.Pod{}},
 			"pod-with-pod-affinity":               {&api.Pod{}},
 			"pod-with-scheduling-gates":           {&api.Pod{}},
@@ -673,6 +676,8 @@ func TestExampleObjectSchemas(t *testing.T) {
 			"security-context-2": {&api.Pod{}},
 			"security-context-3": {&api.Pod{}},
 			"security-context-4": {&api.Pod{}},
+			"security-context-5": {&api.Pod{}},
+			"security-context-6": {&api.Pod{}},
 		},
 		"pods/storage": {
 			"projected":                                    {&api.Pod{}},
